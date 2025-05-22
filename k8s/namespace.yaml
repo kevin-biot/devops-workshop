@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devops-workshop
+  labels:
+    name: devops-workshop
+    workshop: "true"

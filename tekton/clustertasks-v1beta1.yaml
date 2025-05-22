@@ -1,0 +1,126 @@
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: git-clone
+spec:
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+    - name: deleteExisting
+      type: string
+      default: "true"
+    - name: subdirectory
+      type: string
+      default: ""
+  workspaces:
+    - name: source
+  steps:
+    - name: clone
+      image: alpine/git
+      script: |
+        #!/bin/sh
+        set -e
+        if [ "$(params.deleteExisting)" = "true" ]; then
+          echo "🧹 Deleting existing contents in $(workspaces.source.path)"
+          rm -rf $(workspaces.source.path)/*
+        fi
+        TARGET_DIR=$(workspaces.source.path)/$(params.subdirectory)
+        mkdir -p "$TARGET_DIR"
+        cd "$TARGET_DIR"
+        echo "🔁 Cloning repo $(params.url) on branch $(params.revision) into $TARGET_DIR/"
+        git clone --branch $(params.revision) --single-branch $(params.url) . || { echo "❌ Git clone failed"; exit 1; }
+        echo "📂 Contents of $TARGET_DIR after clone:"
+        ls -la "$TARGET_DIR"
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: maven-build
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: pre-debug
+      image: alpine
+      script: |
+        #!/bin/sh
+        echo "📂 Full listing of /workspace/source"
+        ls -lR /workspace/source
+    - name: debug
+      image: maven:3.9.0-eclipse-temurin-17
+      workingDir: /workspace/source
+      script: |
+        echo "📂 Listing contents of /workspace/source"
+        ls -l /workspace/source
+        echo "📂 Listing contents of /workspace/source/repo"
+        ls -l /workspace/source/repo
+        echo "📂 Listing contents of /workspace/source/repo/java-webapp"
+        ls -l /workspace/source/repo/java-webapp
+        echo "📄 Checking for pom.xml"
+        if [ ! -f /workspace/source/repo/java-webapp/pom.xml ]; then
+          echo "❌ pom.xml NOT FOUND"
+          exit 1
+        fi
+        echo "✅ pom.xml found"
+    - name: build
+      image: maven:3.9.0-eclipse-temurin-17
+      workingDir: /workspace/source/repo/java-webapp
+      script: |
+        echo "🚀 Running Maven build"
+        mvn clean package
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: kaniko
+spec:
+  params:
+    - name: IMAGE
+      type: string
+    - name: CONTEXT
+      type: string
+    - name: DOCKERFILE
+      type: string
+  workspaces:
+    - name: source
+  steps:
+    - name: build
+      image: gcr.io/kaniko-project/executor:latest
+      workingDir: /workspace/source/$(params.CONTEXT)
+      script: |
+        /kaniko/executor \
+          --dockerfile=$(params.DOCKERFILE) \
+          --context=dir:///workspace/source/$(params.CONTEXT) \
+          --destination=$(params.IMAGE) \
+          --insecure \
+          --skip-tls-verify \
+          --insecure-registry=image-registry.openshift-image-registry.svc:5000
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: war-sanity-check
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: check-war
+      image: registry.access.redhat.com/ubi8/ubi
+      workingDir: /workspace/source/repo/java-webapp
+      script: |
+        #!/bin/sh
+        echo "🕵️  Checking for WAR file in target/..."
+        if [ ! -f target/devops-demo.war ]; then
+          echo "❌ WAR file not found in target/ directory!"
+          exit 1
+        fi
+
+        echo "📦 Inspecting WAR file:"
+        file target/devops-demo.war
+
+        echo "✅ WAR file exists and passed basic inspection."

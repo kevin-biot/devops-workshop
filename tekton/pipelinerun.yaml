@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: java-webapp-pipeline-run
+  namespace: student01
+spec:
+  pipelineRef:
+    name: java-webapp-pipeline
+  params:
+    - name: git-url
+      value: https://github.com/kevin-biot/devops-workshop.git
+    - name: git-revision
+      value: main
+    - name: image-name
+      value: image-registry.openshift-image-registry.svc:5000/student01/java-webapp:bootcamp-001
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: shared-pvc
