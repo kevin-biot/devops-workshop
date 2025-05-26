@@ -6,7 +6,7 @@ metadata:
 spec:
   source:
     type: Git
-    contextDir: java-webapp
+    contextDir: "."                         # ← look in repo root
     git:
       url: https://github.com/kevin-biot/devops-workshop.git
   strategy:
