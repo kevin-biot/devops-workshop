@@ -19,19 +19,17 @@ spec:
       image: alpine
       script: |
         #!/bin/sh
-        echo "📂 Now listing /workspace/source/java-webapp"
-        ls -la /workspace/source/java-webapp
-        echo "🔍 Checking for pom.xml"
-        if [ ! -f /workspace/source/java-webapp/pom.xml ]; then
-          echo "❌ pom.xml NOT FOUND in java-webapp!"
+        echo "🔍 Checking for pom.xml at the workspace root"
+        if [ ! -f /workspace/source/pom.xml ]; then
+          echo "❌ pom.xml NOT FOUND at /workspace/source!"
           exit 1
         fi
         echo "✅ pom.xml found"
 
     - name: build
       image: maven:3.8.6-openjdk-11
-      workingDir: /workspace/source/java-webapp
+      workingDir: /workspace/source
       script: |
         #!/bin/sh
-        echo "🚀 Building the WAR"
+        echo "🚀 Building the WAR from /workspace/source"
         mvn -B clean package
