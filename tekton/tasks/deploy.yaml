@@ -1,3 +1,4 @@
+# tekton/tasks/deploy.yaml
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
@@ -6,19 +7,16 @@ spec:
   params:
     - name: manifest-path
       type: string
-      description: Path (relative to workspace) to your k8s manifests
     - name: namespace
       type: string
-      description: Target namespace for deployment
   workspaces:
     - name: source
-      description: The workspace containing the k8s manifests
   steps:
-    - name: oc-apply
-      image: registry.access.redhat.com/ubi8/ubi
+    - name: kubectl-apply
+      image: bitnami/kubectl:latest
       workingDir: $(workspaces.source.path)
       script: |
-        #!/bin/bash
+        #!/bin/sh
         set -e
-        echo "⛓️ Applying manifests from $(params.manifest-path) to namespace $(params.namespace)"
-        oc apply -f $(params.manifest-path) -n $(params.namespace)
+        echo "⛓️ Applying $(params.manifest-path) to namespace $(params.namespace)"
+        kubectl apply -f $(params.manifest-path) -n $(params.namespace)
