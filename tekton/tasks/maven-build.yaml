@@ -21,7 +21,7 @@ spec:
         #!/bin/sh
         echo "🔍 Checking for pom.xml at the workspace root"
         if [ ! -f /workspace/source/pom.xml ]; then
-          echo "❌ pom.xml NOT FOUND at /workspace/source!"
+          echo "❌ pom.xml NOT FOUND under /workspace/source!"
           exit 1
         fi
         echo "✅ pom.xml found"
@@ -31,5 +31,5 @@ spec:
       workingDir: /workspace/source
       script: |
         #!/bin/sh
-        echo "🚀 Building the WAR from /workspace/source"
+        echo "🚀 Building the WAR"
         mvn -B clean package
