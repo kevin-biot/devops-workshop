@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: java-webapp-pipeline
@@ -6,22 +6,20 @@ spec:
   params:
     - name: git-url
       type: string
-      description: Git repo URL (public)
+      description: Public Git repo URL
     - name: git-revision
       type: string
-      description: Branch, tag, or commit to checkout
+      description: Branch, tag or commit
       default: "main"
     - name: build-name
       type: string
       description: Shipwright Build name
-      default: "java-webapp-build"
     - name: namespace
       type: string
-      description: Target OpenShift project for deployment
+      description: Target OpenShift project
   workspaces:
     - name: source
-      description: Workspace for source checkout & artifacts
-
+      description: Where source is checked out
   tasks:
     - name: clone
       taskRef:
@@ -60,9 +58,9 @@ spec:
         name: shipwright-trigger
         kind: Task
       params:
-        - name: BUILD_NAME    # exactly matches Task.spec.params
+        - name: BUILD_NAME
           value: $(params.build-name)
-        - name: NAMESPACE     # exactly matches Task.spec.params
+        - name: NAMESPACE
           value: $(params.namespace)
 
     - name: deploy
