@@ -8,7 +8,7 @@ spec:
     name: java-webapp-pipeline
   params:
     - name: git-url
-      value: https://github.com/YOUR_ORG/devops-workshop.git
+      value: https://github.com/kevin-biot/devops-workshop.git
     - name: git-revision
       value: main
     - name: build-name
