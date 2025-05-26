@@ -1,7 +1,9 @@
-apiVersion: tekton.dev/v1
-kind: Task
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
 metadata:
   name: maven-build
+  labels:
+    tekton.dev/task: "maven-build"
 spec:
   workspaces:
     - name: source
@@ -11,13 +13,11 @@ spec:
       image: alpine
       script: |
         #!/bin/sh
-        set -e
         echo "📂 Full listing of /workspace/source"
         ls -lR /workspace/source
 
     - name: debug
       image: maven:3.9.0-eclipse-temurin-17
-      workingDir: /workspace/source
       script: |
         #!/bin/sh
         echo "🔍 Checking for pom.xml at the workspace root"
@@ -32,5 +32,5 @@ spec:
       workingDir: /workspace/source
       script: |
         #!/bin/sh
-        echo "🚀 Running Maven package"
+        echo "🚀 Building with JDK 17"
         mvn -B clean package
