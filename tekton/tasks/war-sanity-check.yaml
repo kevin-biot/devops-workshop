@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: war-sanity-check
+spec:
+  workspaces:
+    - name: source
+      description: The workspace containing the cloned repo
+  steps:
+    - name: check-war
+      image: registry.access.redhat.com/ubi8/ubi
+      workingDir: /workspace/source/java-webapp
+      script: |
+        #!/bin/sh
+        set -e
+        echo "🕵️  Checking for WAR file in target/..."
+        if [ ! -f target/java-webapp.war ]; then
+          echo "❌ target/java-webapp.war not found!"
+          exit 1
+        fi
+        echo "📦 Inspecting WAR file:"
+        file target/java-webapp.war
+        echo "✅ WAR file exists and passed basic inspection."

@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: maven-build
+spec:
+  workspaces:
+    - name: source
+      description: The workspace containing the cloned repo
+  steps:
+    - name: pre-debug
+      image: alpine
+      script: |
+        #!/bin/sh
+        set -e
+        echo "📂 Full listing of /workspace/source"
+        ls -lR /workspace/source
+
+    - name: debug
+      image: alpine
+      script: |
+        #!/bin/sh
+        echo "📂 Now listing /workspace/source/java-webapp"
+        ls -la /workspace/source/java-webapp
+        echo "🔍 Checking for pom.xml"
+        if [ ! -f /workspace/source/java-webapp/pom.xml ]; then
+          echo "❌ pom.xml NOT FOUND in java-webapp!"
+          exit 1
+        fi
+        echo "✅ pom.xml found"
+
+    - name: build
+      image: maven:3.8.6-openjdk-11
+      workingDir: /workspace/source/java-webapp
+      script: |
+        #!/bin/sh
+        echo "🚀 Building the WAR"
+        mvn -B clean package
