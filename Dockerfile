@@ -2,8 +2,7 @@
 FROM maven:3.9.6-eclipse-temurin-17 as builder
 
 WORKDIR /build
-COPY pom.xml .
-COPY src ./src
+COPY . .  # ← FULL COPY to preserve structure
 
 RUN mvn clean package
 
