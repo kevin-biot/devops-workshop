@@ -1,12 +1,14 @@
+# Stage 1: Maven build
+FROM maven:3.9.6-eclipse-temurin-17 as builder
+
+WORKDIR /build
+COPY pom.xml .
+COPY src ./src
+
+RUN mvn clean package
+
+# Stage 2: Tomcat image with deployed WAR
 FROM tomcat:9.0-jdk17
 
-# Clean and prep
-RUN rm -rf /usr/local/tomcat/webapps/* && \
-    mkdir -p /usr/local/tomcat/webapps/ROOT
-
-# Copy and extract WAR in the same step to avoid layer cache mismatch
-COPY target/java-webapp.war /usr/local/tomcat/webapps/
-RUN cd /usr/local/tomcat/webapps/ROOT && \
-    jar -xf ../java-webapp.war
-
-EXPOSE 8080
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=builder /build/target/java-webapp.war /usr/local/tomcat/webapps/ROOT.war
