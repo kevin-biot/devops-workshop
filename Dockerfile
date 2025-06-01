@@ -26,17 +26,16 @@ FROM docker.io/library/tomcat:9.0.85-jdk17
 # Install unzip for WAR extraction
 USER root
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
-USER 1001
 
+# Clean Tomcat default apps and unpack WAR
 RUN rm -rf /usr/local/tomcat/webapps/*
-
 COPY --from=builder /build/target/java-webapp.war /tmp/
 RUN unzip -q /tmp/java-webapp.war -d /usr/local/tomcat/webapps/ROOT && \
     rm -f /tmp/java-webapp.war && \
     chown -R 1001:0 /usr/local/tomcat/webapps && \
     chmod -R g+rwX /usr/local/tomcat/webapps
 
-
-# Only now drop privileges
+# ✅ Now drop to unprivileged user
 USER 1001
+
 EXPOSE 8080
