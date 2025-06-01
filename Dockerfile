@@ -36,4 +36,7 @@ RUN unzip -q /tmp/java-webapp.war -d /usr/local/tomcat/webapps/ROOT && \
     chown -R 1001:0 /usr/local/tomcat/webapps && \
     chmod -R g+rwX /usr/local/tomcat/webapps
 
+
+# Only now drop privileges
+USER 1001
 EXPOSE 8080
