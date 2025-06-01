@@ -1,3 +1,4 @@
+# ===== Stage 1: Maven Build =====
 FROM docker.io/library/maven:3.9.6-eclipse-temurin-17 AS builder
 
 # Configure Maven to use only public repositories
@@ -14,17 +15,22 @@ RUN mkdir -p /usr/share/maven/ref/ && \
     </settings>' > /usr/share/maven/ref/settings.xml
 
 WORKDIR /build
+
+# Copy the project definition and prefetch dependencies
 COPY pom.xml .
-# Run with custom settings to ensure public repo usage
 RUN mvn -B -s /usr/share/maven/ref/settings.xml dependency:go-offline
 
+# Copy source and build
 COPY src ./src
 RUN mvn -B -s /usr/share/maven/ref/settings.xml clean package -DskipTests
 
-FROM tomcat:9.0-jdk17
+# ===== Stage 2: Runtime with Tomcat =====
+FROM docker.io/library/tomcat:9.0.85-jdk17
+
+# Clean default apps
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Manually explode WAR with proper permissions (OpenShift compatible)
+# Copy WAR and extract
 COPY --from=builder /build/target/java-webapp.war /tmp/
 RUN unzip -q /tmp/java-webapp.war -d /usr/local/tomcat/webapps/ROOT && \
     rm -f /tmp/java-webapp.war && \
