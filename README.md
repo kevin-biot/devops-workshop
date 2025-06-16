@@ -20,10 +20,20 @@ Kubernetes/OpenShift manifests are provided under the `k8s/` directory. Apply th
 3. `k8s/rbac/` – roles and bindings required for the pipeline service account.
 4. `k8s/deployment.yaml`, `k8s/service.yaml` and `k8s/route.yaml` – deploy the application and expose it via a route.
 
-Adjust the namespace in the manifests if necessary, then run:
+Before applying the manifests set a namespace variable and substitute it when
+applying. For a single file this looks like:
 
 ```bash
-kubectl apply -f k8s/
+export NAMESPACE=student05
+envsubst < k8s/deployment.yaml | oc apply -f -
+```
+
+To process multiple files you can loop over them:
+
+```bash
+for f in k8s/*.yaml k8s/rbac/*.yaml; do
+  envsubst < "$f" | oc apply -f -
+done
 ```
 
 ## Tekton and Shipwright Pipelines

@@ -2,7 +2,7 @@ apiVersion: shipwright.io/v1beta1
 kind: BuildRun
 metadata:
   generateName: java-webapp-buildrun-
-  namespace: student01
+  namespace: {{NAMESPACE}}
 spec:
   build:
     name: java-webapp-build

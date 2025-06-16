@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: java-webapp-run
-  namespace: student01        # <-- your student’s project
+  namespace: {{NAMESPACE}}        # <-- your student’s project
 spec:
   pipelineRef:
     name: java-webapp-pipeline
@@ -14,7 +14,7 @@ spec:
     - name: build-name
       value: java-webapp-build   # matches your Shipwright Build metadata.name
     - name: namespace
-      value: student01           # target for both Shipwright and deploy
+      value: {{NAMESPACE}}           # target for both Shipwright and deploy
   workspaces:
     - name: source
       persistentVolumeClaim:
