@@ -2,7 +2,7 @@ apiVersion: shipwright.io/v1alpha1
 kind: Build
 metadata:
   name: java-webapp-build
-  namespace: student01
+  namespace: {{NAMESPACE}}
 spec:
   source:
     type: Git
@@ -13,4 +13,4 @@ spec:
     name: buildah-shipwright-managed-push
     kind: ClusterBuildStrategy
   output:
-    image: image-registry.openshift-image-registry.svc:5000/student01/java-webapp:latest
+    image: image-registry.openshift-image-registry.svc:5000/{{NAMESPACE}}/java-webapp:latest
