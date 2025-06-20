@@ -3,19 +3,18 @@ apiVersion: shipwright.io/v1beta1
 kind: Build
 metadata:
   name: java-webapp-build
-  namespace: {{NAMESPACE}}
+  namespace: student01
 spec:
   source:
     type: Git
     contextDir: "."
     git:
       url: https://github.com/kevin-biot/devops-workshop.git
-      revision: dev
   strategy:
     name: buildah  # Using OpenShift's built-in strategy
     kind: ClusterBuildStrategy
   output:
-    image: image-registry.openshift-image-registry.svc:5000/{{NAMESPACE}}/java-webapp:latest
+    image: image-registry.openshift-image-registry.svc:5000/student01/java-webapp:latest
   paramValues:
     - name: dockerfile
       value: Dockerfile
