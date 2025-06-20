@@ -1,4 +1,5 @@
-apiVersion: shipwright.io/v1alpha1
+# build.yaml
+apiVersion: shipwright.io/v1beta1
 kind: Build
 metadata:
   name: java-webapp-build
@@ -6,11 +7,16 @@ metadata:
 spec:
   source:
     type: Git
-    contextDir: "."                         # ← look in repo root
+    contextDir: "."
     git:
       url: https://github.com/kevin-biot/devops-workshop.git
   strategy:
-    name: buildah-shipwright-managed-push
+    name: buildah  # Using OpenShift's built-in strategy
     kind: ClusterBuildStrategy
   output:
     image: image-registry.openshift-image-registry.svc:5000/student01/java-webapp:latest
+  paramValues:
+    - name: dockerfile
+      value: Dockerfile
+    - name: storage-driver
+      value: vfs  # Still needed as shown in the strategy parameters
