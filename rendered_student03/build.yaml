@@ -1,0 +1,23 @@
+# build.yaml
+apiVersion: shipwright.io/v1beta1
+kind: Build
+metadata:
+  name: java-webapp-build
+  namespace: student03
+spec:
+  source:
+    type: Git
+    contextDir: "."
+    git:
+      url: https://github.com/kevin-biot/devops-workshop.git
+      revision: dev
+  strategy:
+    name: buildah  # Using OpenShift's built-in strategy
+    kind: ClusterBuildStrategy
+  output:
+    image: image-registry.openshift-image-registry.svc:5000/student03/java-webapp:latest
+  paramValues:
+    - name: dockerfile
+      value: Dockerfile
+    - name: storage-driver
+      value: vfs  # Still needed as shown in the strategy parameters

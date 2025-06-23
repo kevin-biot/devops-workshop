@@ -28,7 +28,7 @@ FILES_RENDER_AND_APPLY=(
   k8s/deployment.yaml
   k8s/service.yaml               #  ⬅ NEW
   k8s/route.yaml                 #  ⬅ NEW
-  tekton/pvc.yaml
+  # tekton/pvc.yaml              #  ⬅ REMOVED - PVC already created by deploy-students.sh
   tekton/pipeline.yaml
   tekton/tasks/deploy.yaml
   tekton/tasks/shipwright-trigger.yaml
@@ -37,6 +37,7 @@ FILES_RENDER_AND_APPLY=(
 
 # ---------- rendered only (student applies manually) --------------
 FILES_RENDER_ONLY=(
+  tekton/pvc.yaml                  #  ⬅ MOVED HERE - render for reference but don't apply
   shipwright/build/buildrun.yaml
   tekton/pipeline-run.yaml
 )
