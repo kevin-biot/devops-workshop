@@ -63,6 +63,11 @@ cat <<EOF
 🎯 All YAMLs rendered for namespace: $NAMESPACE
 📂 Rendered files are in: $DEST_DIR
 
+# 🌐 give the student a one-liner to discover the route
+echo ""
+echo "🌐 Once the rollout is green, open this in a browser:"
+echo "      http://\$(oc get route java-webapp -n $NAMESPACE -o jsonpath='{.spec.host}')"
+
 📌 Next steps for the student
   1.  cd $DEST_DIR
 
