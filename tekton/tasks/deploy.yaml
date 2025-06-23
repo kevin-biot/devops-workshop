@@ -19,7 +19,7 @@ spec:
       set -eu
       echo "⛓️ Rendering $(params.manifest-path) with namespace $(params.namespace)"
       # Replace the template token into a temp file
-      sed "s/{{NAMESPACE}}/$(params.namespace)/g" \
+      sed "s/{{TARGET_NAMESPACE}}/$(params.namespace)/g" \
           "$(params.manifest-path)" > /tmp/rendered.yaml
       echo "✅ Result:"
       cat /tmp/rendered.yaml
