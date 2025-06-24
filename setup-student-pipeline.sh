@@ -1,7 +1,7 @@
 #!/bin/bash
 # ------------------------------------------------------------------
 # Render & apply everything a student needs *except* the two
-# “one-shot” objects they must run by hand (BuildRun + PipelineRun).
+# "one-shot" objects they must run by hand (BuildRun + PipelineRun).
 # ------------------------------------------------------------------
 set -euo pipefail
 echo "🔧 Student Pipeline Setup Script"
@@ -30,9 +30,13 @@ FILES_RENDER_AND_APPLY=(
   k8s/route.yaml                 #  ⬅ NEW
   # tekton/pvc.yaml              #  ⬅ REMOVED - PVC already created by deploy-students.sh
   tekton/pipeline.yaml
+  shipwright/build/build.yaml
+)
+
+# ---------- tekton tasks applied directly (no templating) ----------
+TEKTON_TASKS=(
   tekton/tasks/deploy.yaml
   tekton/tasks/shipwright-trigger.yaml
-  shipwright/build/build.yaml
 )
 
 # ---------- rendered only (student applies manually) --------------
@@ -54,8 +58,14 @@ done
 echo -e "\n🚀 Applying initial resources to namespace: $NAMESPACE"
 for f in "${FILES_RENDER_AND_APPLY[@]}"; do
   echo "➡️  Applying $(basename "$f")"
-  # 'oc apply' is idempotent → safe on re-runs, no “AlreadyExists” noise.
+  # 'oc apply' is idempotent → safe on re-runs, no "AlreadyExists" noise.
   oc apply -n "$NAMESPACE" -f "$DEST_DIR/$(basename "$f")"
+done
+
+echo -e "\n🎯 Applying Tekton tasks (no templating needed):"
+for f in "${TEKTON_TASKS[@]}"; do
+  echo "➡️  Applying $(basename "$f")"
+  oc apply -n "$NAMESPACE" -f "$f"
 done
 
 # ---------------------- student instructions ----------------------
