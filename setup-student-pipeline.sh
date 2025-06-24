@@ -64,10 +64,8 @@ cat <<EOF
 🎯 All YAMLs rendered for namespace: $NAMESPACE
 📂 Rendered files are in: $DEST_DIR
 
-# 🌐 give the student a one-liner to discover the route
-echo ""
-echo "🌐 Once the rollout is green, open this in a browser:"
-echo "      http://\$(oc get route java-webapp -n $NAMESPACE -o jsonpath='{.spec.host}')"
+🌐 Your app will be available at:
+      https://\$(oc get route java-webapp -n $NAMESPACE -o jsonpath='{.spec.host}')
 
 📌 Next steps for the student
   1.  cd $DEST_DIR
@@ -81,9 +79,30 @@ echo "      http://\$(oc get route java-webapp -n $NAMESPACE -o jsonpath='{.spec
         oc apply  -f pipeline-run.yaml -n $NAMESPACE
 
 🔎 Validate with:
-        oc get buildrun.build.shipwright.io -n $NAMESPACE
-        oc get pipelinerun                 -n $NAMESPACE
-        oc logs -f buildrun/<name>         -n $NAMESPACE   # watch BuildRun
-        tkn pr logs -f <PR name>           -n $NAMESPACE   # Tekton (optional)
+        oc get buildrun -n $NAMESPACE
+        oc get pipelinerun -n $NAMESPACE
+        tkn pipelinerun list -n $NAMESPACE               # list all pipeline runs
+        
+        # Watch BuildRun logs:
+        oc get pods -n $NAMESPACE | grep buildrun        # find buildrun pod name
+        oc logs -f <buildrun-pod-name> -n $NAMESPACE     # watch BuildRun logs
+        
+        # Watch PipelineRun logs (multiple options):
+        tkn pipelinerun logs java-webapp-run -f -n $NAMESPACE    # using tkn CLI (recommended)
+        tkn pipelinerun logs -f -n $NAMESPACE            # follow latest pipelinerun
+        oc logs -f pipelinerun/java-webapp-run -n $NAMESPACE     # using oc logs
+
+🌐 Access your deployed application:
+        oc get route java-webapp -n $NAMESPACE           # get the external URL
+        oc get pods -n $NAMESPACE -l app=java-webapp     # check app pod status
+        oc get svc java-webapp -n $NAMESPACE             # verify service endpoints
+        
+        # Test internal connectivity:
+        curl java-webapp:80
+        
+        # Get external URL and test:
+        export APP_URL="https://\$(oc get route java-webapp -n $NAMESPACE -o jsonpath='{.spec.host}')"
+        echo "App URL: \$APP_URL"
+        curl -k \$APP_URL
 
 EOF
