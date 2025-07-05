@@ -23,6 +23,13 @@ spec:
   steps:
     - name: clone
       image: alpine/git
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
       script: |
         #!/bin/sh
         set -e

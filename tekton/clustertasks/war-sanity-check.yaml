@@ -9,6 +9,13 @@ spec:
   steps:
     - name: check-war
       image: registry.access.redhat.com/ubi8/ubi
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
       script: |
         #!/bin/sh
         set -e
