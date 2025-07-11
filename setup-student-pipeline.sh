@@ -25,7 +25,7 @@ FILES_RENDER_AND_APPLY=(
   k8s/rbac/pipeline-app-role.yaml
   k8s/rbac/pipeline-app-binding.yaml
   k8s/java-webapp-imagestream.yaml
-  k8s/deployment.yaml
+  # k8s/deployment.yaml           #  ⬅ MOVED to pipeline-only deployment
   k8s/service.yaml               #  ⬅ NEW
   k8s/route.yaml                 #  ⬅ NEW
   # tekton/pvc.yaml              #  ⬅ REMOVED - PVC already created by deploy-students.sh
@@ -42,6 +42,7 @@ TEKTON_TASKS=(
 # ---------- rendered only (student applies manually) --------------
 FILES_RENDER_ONLY=(
   tekton/pvc.yaml                  #  ⬅ MOVED HERE - render for reference but don't apply
+  k8s/deployment.yaml              #  ⬅ ADDED - pipeline will create deployment
   shipwright/build/buildrun.yaml
   tekton/pipeline-run.yaml
 )
