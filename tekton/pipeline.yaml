@@ -23,8 +23,9 @@ spec:
   tasks:
     - name: clone
       taskRef:
-        name: git-clone
+        name: git-clone-optimized
         kind: ClusterTask
+        apiVersion: tekton.dev/v1beta1
       params:
         - name: url
           value: $(params.git-url)
@@ -37,8 +38,9 @@ spec:
     - name: build
       runAfter: [clone]
       taskRef:
-        name: maven-build
+        name: maven-build-optimized
         kind: ClusterTask
+        apiVersion: tekton.dev/v1beta1
       workspaces:
         - name: source
           workspace: source
@@ -46,8 +48,9 @@ spec:
     - name: sanity
       runAfter: [build]
       taskRef:
-        name: war-sanity-check
+        name: war-sanity-check-optimized
         kind: ClusterTask
+        apiVersion: tekton.dev/v1beta1
       workspaces:
         - name: source
           workspace: source
