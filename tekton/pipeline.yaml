@@ -23,9 +23,14 @@ spec:
   tasks:
     - name: clone
       taskRef:
-        name: git-clone
-        kind: Task
-        apiVersion: tekton.dev/v1
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: {{NAMESPACE}}
       params:
         - name: url
           value: $(params.git-url)
@@ -38,9 +43,14 @@ spec:
     - name: build
       runAfter: [clone]
       taskRef:
-        name: maven-build
-        kind: Task
-        apiVersion: tekton.dev/v1
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: maven-build
+          - name: namespace
+            value: {{NAMESPACE}}
       workspaces:
         - name: source
           workspace: source
@@ -48,9 +58,14 @@ spec:
     - name: sanity
       runAfter: [build]
       taskRef:
-        name: war-sanity-check
-        kind: Task
-        apiVersion: tekton.dev/v1
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: war-sanity-check
+          - name: namespace
+            value: {{NAMESPACE}}
       workspaces:
         - name: source
           workspace: source
@@ -58,9 +73,14 @@ spec:
     - name: shipwright
       runAfter: [sanity]
       taskRef:
-        name: shipwright-trigger
-        kind: Task
-        apiVersion: tekton.dev/v1
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: shipwright-trigger
+          - name: namespace
+            value: {{NAMESPACE}}
       params:
         - name: BUILD_NAME
           value: $(params.build-name)
@@ -70,9 +90,14 @@ spec:
     - name: deploy
       runAfter: [shipwright]
       taskRef:
-        name: deploy
-        kind: Task
-        apiVersion: tekton.dev/v1
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: deploy
+          - name: namespace
+            value: {{NAMESPACE}}
       params:
         - name: manifest-path
           value: k8s/deployment.yaml
