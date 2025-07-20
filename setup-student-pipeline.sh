@@ -33,10 +33,11 @@ FILES_RENDER_AND_APPLY=(
   shipwright/build/build.yaml
 )
 
-# ---------- tekton tasks applied directly (no templating) ----------
-TEKTON_TASKS=(
-  tekton/tasks/deploy.yaml
-  tekton/tasks/shipwright-trigger.yaml
+# ---------- tekton tasks applied per namespace (was ClusterTasks) ----------
+TEKTON_NAMESPACE_TASKS=(
+  tekton/tasks/git-clone.yaml
+  tekton/tasks/maven-build.yaml  
+  tekton/tasks/war-sanity-check.yaml
 )
 
 # ---------- rendered only (student applies manually) --------------
@@ -63,9 +64,21 @@ for f in "${FILES_RENDER_AND_APPLY[@]}"; do
   oc apply -n "$NAMESPACE" -f "$DEST_DIR/$(basename "$f")"
 done
 
+# ---------- tekton tasks applied directly (no templating) ----------
+TEKTON_TASKS=(
+  tekton/tasks/deploy.yaml
+  tekton/tasks/shipwright-trigger.yaml
+)
+
 echo -e "\n🎯 Applying Tekton tasks (no templating needed):"
 for f in "${TEKTON_TASKS[@]}"; do
   echo "➡️  Applying $(basename "$f")"
+  oc apply -n "$NAMESPACE" -f "$f"
+done
+
+echo -e "\n🎯 Applying namespace-specific tasks (was ClusterTasks):"
+for f in "${TEKTON_NAMESPACE_TASKS[@]}"; do
+  echo "➡️  Applying $(basename "$f") to namespace $NAMESPACE"
   oc apply -n "$NAMESPACE" -f "$f"
 done
 
