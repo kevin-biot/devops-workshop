@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: java-webapp-pipeline
@@ -23,9 +23,9 @@ spec:
   tasks:
     - name: clone
       taskRef:
-        name: git-clone-optimized
-        kind: ClusterTask
-        apiVersion: tekton.dev/v1beta1
+        name: git-clone
+        kind: Task
+        apiVersion: tekton.dev/v1
       params:
         - name: url
           value: $(params.git-url)
@@ -38,9 +38,9 @@ spec:
     - name: build
       runAfter: [clone]
       taskRef:
-        name: maven-build-optimized
-        kind: ClusterTask
-        apiVersion: tekton.dev/v1beta1
+        name: maven-build
+        kind: Task
+        apiVersion: tekton.dev/v1
       workspaces:
         - name: source
           workspace: source
@@ -48,9 +48,9 @@ spec:
     - name: sanity
       runAfter: [build]
       taskRef:
-        name: war-sanity-check-optimized
-        kind: ClusterTask
-        apiVersion: tekton.dev/v1beta1
+        name: war-sanity-check
+        kind: Task
+        apiVersion: tekton.dev/v1
       workspaces:
         - name: source
           workspace: source
@@ -60,6 +60,7 @@ spec:
       taskRef:
         name: shipwright-trigger
         kind: Task
+        apiVersion: tekton.dev/v1
       params:
         - name: BUILD_NAME
           value: $(params.build-name)
@@ -71,6 +72,7 @@ spec:
       taskRef:
         name: deploy
         kind: Task
+        apiVersion: tekton.dev/v1
       params:
         - name: manifest-path
           value: k8s/deployment.yaml
