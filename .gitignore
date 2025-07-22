@@ -1,0 +1,20 @@
+# Build artifacts
+target/
+*.war
+*.jar
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Instructor materials (keep local only)
+INSTRUCTOR-README.md
+
+# Temporary files
+*.tmp
+*.log
