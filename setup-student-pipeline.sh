@@ -94,13 +94,9 @@ cat <<EOF
 📌 Next steps for the student
   1.  cd $DEST_DIR
 
-  2.  Trigger a Shipwright build (re-run safe):
-        oc delete buildrun --all -n $NAMESPACE --ignore-not-found
-        oc create -f buildrun.yaml -n $NAMESPACE
-
-  3.  Kick off the full pipeline (re-run safe):
+  2.  Run the complete CI/CD pipeline (handles build and deployment):
         oc delete pipelinerun --all -n $NAMESPACE --ignore-not-found
-        oc apply  -f pipeline-run.yaml -n $NAMESPACE
+        oc apply -f pipeline-run.yaml -n $NAMESPACE
 
 🔎 Validate with:
         oc get buildrun -n $NAMESPACE

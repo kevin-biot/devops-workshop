@@ -106,26 +106,23 @@ The script then automatically:
 
 ### Manual Execution Steps
 
-After the setup script completes successfully, you'll see detailed instructions. Follow these steps exactly:
+After the setup script completes successfully, you'll see detailed instructions. Follow this step exactly:
 
 ```bash
 # 1. Navigate to your rendered configuration directory
 cd rendered_<your-namespace>
 # Example: cd rendered_student01
 
-# 2. Trigger a Shipwright build (builds your container image)
-oc delete buildrun --all -n <your-namespace> --ignore-not-found
-oc create -f buildrun.yaml -n <your-namespace>
-
-# 3. Execute the complete CI/CD pipeline
+# 2. Execute the complete CI/CD pipeline (handles build and deployment)
 oc delete pipelinerun --all -n <your-namespace> --ignore-not-found
 oc apply -f pipeline-run.yaml -n <your-namespace>
 ```
 
 **Important Notes:**
 - Replace `<your-namespace>` with your actual namespace (e.g., `student01`)
-- The delete commands are safe to run - they clean up any previous attempts
-- Both commands are "re-run safe" - you can execute them multiple times
+- The delete command is safe to run - it cleans up any previous attempts
+- The pipeline is "re-run safe" - you can execute it multiple times
+- The pipeline automatically handles container image building via Shipwright
 
 ### Expected Output from Setup Script
 
@@ -161,8 +158,7 @@ When the setup script runs successfully, you'll see output similar to this:
 
 📌 Next steps for the student
   1.  cd rendered_student01
-  2.  Trigger a Shipwright build (re-run safe)
-  3.  Kick off the full pipeline (re-run safe)
+  2.  Run the complete CI/CD pipeline (handles build and deployment)
 ```
 
 ## Monitoring and Validation
@@ -264,15 +260,15 @@ chmod +x ./setup-student-pipeline.sh
 
 ### File Not Found During Manual Steps
 
-If you see `error: the path "buildrun.yaml" does not exist`:
+If you see `error: the path "pipeline-run.yaml" does not exist`:
 
 ```bash
 # Make sure you're in the correct directory:
 cd rendered_<your-namespace>
 # Example: cd rendered_student01
 
-# Then run the commands:
-oc create -f buildrun.yaml -n <your-namespace>
+# Then run the command:
+oc apply -f pipeline-run.yaml -n <your-namespace>
 ```
 
 ## Troubleshooting Guide
